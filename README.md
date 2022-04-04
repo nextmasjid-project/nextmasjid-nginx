@@ -1,1 +1,1 @@
-# nextmasjid-nginx
+# nginx-nextmasjid

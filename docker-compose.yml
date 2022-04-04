@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  
+  nginx:
+    image: nextmasjiddocker/nextmasjid-nginx:latest 
+    container_name: nginx-container
+    deploy:
+      replicas: 1
+    restart: always    
+    networks:
+      - nginx-network        
+    ports:
+      - "80:80"
+      - "5000:5000"     
+      - "443:443"   
+    volumes:
+      - ./ssl-cert/www/:/usr/share/nginx/html:ro
+      - ./ssl-cert/conf/:/etc/nginx/ssl/:ro
+      - ./nginx/log/:/var/log/nginx/
+     
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot-container
+    deploy:
+      replicas: 1
+    networks:
+      - nginx-network    
+    volumes:
+      - ./ssl-cert/www/:/usr/share/nginx/html:rw
+      - ./ssl-cert/conf/:/etc/letsencrypt/:rw
+    command: certonly --webroot -w /usr/share/nginx/html --email pablo@pablo.eti.br --agree-tos -d nginx.pablo.eti.br -d nginx-api.pablo.eti.br
+
+networks:
+  nginx-network:
+    name: nginx-network
+    
+    
+  
