@@ -33,14 +33,14 @@ jobs:
         id: tag
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
-      #- name: Build and push
-      #  uses: docker/build-push-action@v2
-      #  with:          
-      #    context: .
-      #    file: ./Dockerfile
-      #    registry: ${{ env.REGISTRY }}
-      #    push: true          
-      #    tags: nextmasjiddocker/nextmasjid-nginx:${{ steps.tag.outputs.VERSION }},  nextmasjiddocker/nextmasjid-nginx:latest  
+      - name: Install SSH Key
+        uses: kielabokkie/ssh-key-and-known-hosts-action@v1.2.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-host: ${{ secrets.SERVER }}  
+
+      - name: Copy docker-compose
+        run: scp docker-compose.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER }}:/home/${{ secrets.SERVER_USER }}/
 
       - name: Deploy the Cerbot container        
         uses: appleboy/ssh-action@master
@@ -49,8 +49,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: CONTAINER_NAME, SERVICE_NAME
-          script: |
-            wget -L https://raw.githubusercontent.com/nextmasjid-project/nextmasjid-nginx/main/docker-compose.yml -P $HOME
+          script: |            
             RESULT=$(docker container ps -q -f name=$CONTAINER_NAME)
             if [[ ! -z $RESULT ]]; then             
               docker-compose -f $HOME/docker-compose.yml rm -svf $SERVICE_NAME 
