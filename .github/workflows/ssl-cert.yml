@@ -50,7 +50,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: CONTAINER_NAME, SERVICE_NAME
           script: |
-            wget -L https://raw.githubusercontent.com/nextmasjid-project/nextmasjid-frontend/main/docker/docker-compose.yml -P $HOME
+            wget -L https://raw.githubusercontent.com/nextmasjid-project/nextmasjid-nginx/main/docker-compose.yml -P $HOME
             RESULT=$(docker container ps -q -f name=$CONTAINER_NAME)
             if [[ ! -z $RESULT ]]; then             
               docker-compose -f $HOME/docker-compose.yml rm -svf $SERVICE_NAME 
