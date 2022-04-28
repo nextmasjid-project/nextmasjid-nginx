@@ -30,6 +30,19 @@ services:
       - ./ssl-cert/www/:/usr/share/nginx/html:rw
       - ./ssl-cert/conf/:/etc/letsencrypt/:rw
     command: certonly --webroot -w /usr/share/nginx/html --email pablo@pablo.eti.br --agree-tos -d www.nextmasjid.com -d api.nextmasjid.com
+    
+  certbot-renew:
+    image: certbot/certbot:latest
+    container_name: certbot-container-renew
+    deploy:
+      replicas: 1
+    networks:
+      - nginx-network
+    volumes:
+      - ./ssl-cert/www/:/usr/share/nginx/html:rw
+      - ./ssl-cert/conf/:/etc/letsencrypt/:rw
+      - ./ssl-cert/log/:/var/log/letsencrypt/:rw
+    command: renew --webroot -w /usr/share/nginx/html --cert-name www.nextmasjid.com -v
 
 networks:
   nginx-network:
