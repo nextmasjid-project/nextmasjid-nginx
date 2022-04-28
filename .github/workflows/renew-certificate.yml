@@ -3,7 +3,7 @@ name: Renew certificates
 on:
   
   schedule:
-    - cron: '0 0 * * sun'
+    - cron: '0 22 * * sun'
     
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
