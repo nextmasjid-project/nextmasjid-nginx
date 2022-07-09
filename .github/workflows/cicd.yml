@@ -5,7 +5,7 @@ on:
     tags:     # Only run when a new tag is pushed to the repository
       - 'v*'  
 
-    workflow_dispatch:
+  workflow_dispatch:
 
 env:
   CONTAINER_NAME: nginx-container
