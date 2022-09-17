@@ -1,0 +1,50 @@
+server {
+    listen 80;    
+
+    server_name warith.org www.warith.org;
+    server_tokens off;
+
+    location / {
+        return 301 https://www.warith.org$request_uri;
+    }   
+
+    location ~/.well-known/acme-challenge/ {
+        allow all;
+        root /usr/share/nginx/html;
+    }
+    
+    location = .well-known/acme-challenge/ {
+                return 404;
+    }    
+}
+
+
+server {
+    listen 443 default_server ssl http2;
+  
+    server_name warith.org www.warith.org;
+
+    ssl_certificate /etc/nginx/ssl/live/www.warith.org/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/www.warith.org/privkey.pem;
+    ssl_trusted_certificate /etc/nginx/ssl/live/www.warith.org/chain.pem;
+
+    location ~ /.well-known/acme-challenge {
+                allow all;
+                root /usr/share/nginx/html;
+    }
+
+    location = .well-known/acme-challenge/ {
+                return 404;
+    }
+    
+    location / {
+        resolver    127.0.0.11 valid=30s;       
+        proxy_pass http://cvat-ui$request_uri;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+
+}
